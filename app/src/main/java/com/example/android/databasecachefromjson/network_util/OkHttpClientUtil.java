@@ -7,7 +7,7 @@ public class OkHttpClientUtil {
     public static OkHttpClient buildOkHttpClient(){
         return new OkHttpClient.Builder()
                 .addInterceptor(
-                        new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC))
+                        new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
                 .build();
     }
 }

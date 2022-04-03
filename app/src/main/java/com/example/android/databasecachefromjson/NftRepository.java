@@ -10,7 +10,7 @@ public class NftRepository {
     public static Retrofit fetchClient() {
         return new Retrofit
                 .Builder()
-                .baseUrl("https://api.opensea.io/api/v1/")
+                .baseUrl("https://run.mocky.io/v3/")
                 .addConverterFactory(GsonConverterFactory.create(createGson()))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .client(buildOkHttpClient())
