@@ -17,7 +17,11 @@ import android.util.Log;
 import com.example.android.databasecachefromjson.data.NftContract;
 import com.example.android.databasecachefromjson.data_model.Asset;
 import com.example.android.databasecachefromjson.data_model.Dto;
+
+import java.io.IOException;
 import java.util.ArrayList;
+
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -73,8 +77,18 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 .enqueue(new Callback<Dto>() {
             @Override
             public void onResponse(@NonNull Call<Dto> call, @NonNull Response<Dto> response) {
-                assert response.body() != null;
-                assetsList_from_retrofit.addAll(response.body().assets());
+                ResponseBody errorBody = response.errorBody();
+                if (errorBody!=null){
+                    try {
+                        Log.e("TAG", "Failed!" + "Response = " + errorBody.string());
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }else{
+                    assert response.body() != null;
+                    assetsList_from_retrofit.addAll(response.body().assets());
+                }
+
             }
             @Override
             public void onFailure(@NonNull Call<Dto> call, @NonNull Throwable t) {
