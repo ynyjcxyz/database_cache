@@ -1,9 +1,5 @@
 package com.example.android.databasecachefromjson;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.app.LoaderManager;
 import android.content.ContentProviderOperation;
 import android.content.ContentValues;
@@ -14,11 +10,19 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.android.databasecachefromjson.data.NftContract;
 import com.example.android.databasecachefromjson.data_model.Asset;
 import com.example.android.databasecachefromjson.data_model.Dto;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -72,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 .enqueue(new Callback<Dto>() {
                     @Override
                     public void onResponse(Call<Dto> call, Response<Dto> response) {
-                        if(nftAdapter.getItemCount() == 0) {
+                        if (nftAdapter.getItemCount() == 0) {
                             insertDataToDatabase(removeNull(response.body().assets()));
                         }
                     }
@@ -89,13 +93,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         //remove null from list
         for (int i = 0; i < input.size(); i++) {
             Asset current = input.get(i);
-            if (current.token_id() == null) {
-                continue;
-             }
-            if (current.permalink() == null) {
-                continue;
+            if (current.token_id() != null && current.permalink() != null) {
+                newFilteredList.add(current);
             }
-            newFilteredList.add(current);
         }
         return newFilteredList;
     }
