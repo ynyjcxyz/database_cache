@@ -88,13 +88,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         List<Asset> newFilteredList = new ArrayList<>();
         //remove null from list
         for (int i = 0; i < input.size(); i++) {
-            if (input.get(i).token_id() == null) {
+            Asset current = input.get(i);
+            if (current.token_id() == null) {
                 continue;
              }
-            if (input.get(i).permalink() == null) {
+            if (current.permalink() == null) {
                 continue;
             }
-            newFilteredList.add(input.get(i));
+            newFilteredList.add(current);
         }
         return newFilteredList;
     }
