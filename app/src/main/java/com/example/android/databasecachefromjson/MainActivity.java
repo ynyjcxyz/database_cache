@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         nftRecyclerView.setAdapter(nftAdapter);
     }
 
-    private void insertDataToDatabase(List<Asset> listFromRetrofit) {
+    private  void insertDataToDatabase(List<Asset> listFromRetrofit) {
         ArrayList<ContentProviderOperation> batch = new ArrayList<>();
         for (int i = 0; i < listFromRetrofit.size(); i++) {
             Asset asset = listFromRetrofit.get(i);
@@ -84,17 +84,18 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 });
     }
 
-    public List<Asset> removeNull(List<Asset> assets) {
+    public static List<Asset> removeNull(List<Asset> input) {
         //remove null from list
-        for (int i = 0; i < assets.size(); i++) {
-            if (assets.get(i).token_id() == null) {
-                (assets.get(i).token_id()).equals("Unknown");
-            }
-            if (assets.get(i).permalink() == null) {
-                (assets.get(i).permalink()).equals("Unknown");
+        List<Asset> outputList = new ArrayList<>();
+        for (int i = 0; i < input.size(); i++) {
+            Asset current = input.get(i);
+            String token_id = current.token_id();
+            String permalink = current.permalink();
+            if(token_id != null && permalink != null) {
+                outputList.add(current);
             }
         }
-        return assets;
+        return outputList;
     }
 
     @Override
