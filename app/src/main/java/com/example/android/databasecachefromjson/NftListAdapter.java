@@ -42,7 +42,6 @@ public class NftListAdapter extends RecyclerView.Adapter<NftViewHolder>{
                 int permalink = mCursor.getColumnIndex(NftContract.NftEntry.COLUMN_NFT_PERMALINK);
                 int name = mCursor.getColumnIndex(NftContract.NftEntry.COLUMN_NFT_NAME);
                 int img_url = mCursor.getColumnIndex(NftContract.NftEntry.COLUMN_NFT_IMG_URL);
-
                 holder.token_id.setText(mCursor.getString(token_id));
                 holder.permalink.setText(mCursor.getString(permalink));
                 holder.name.setText(mCursor.getString(name));

@@ -18,6 +18,7 @@ import com.example.android.databasecachefromjson.data.NftContract;
 import com.example.android.databasecachefromjson.data_model.Asset;
 import com.example.android.databasecachefromjson.data_model.Dto;
 import java.util.ArrayList;
+import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -26,14 +27,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private static final int NFT_LOADER_ID = 0;
     private RecyclerView nftRecyclerView;
     private NftListAdapter nftAdapter;
-    static final String format = "json";
+    static final String UUID = "d3267819-ea0b-4209-b521-b7b2d887c6c1";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        insertDataToDatabase(getDataFromRetrofit(format));
+        bindData(UUID);
 
         getLoaderManager().initLoader(NFT_LOADER_ID, null, this);
 
@@ -43,15 +43,15 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         nftRecyclerView.setAdapter(nftAdapter);
     }
 
-    private void insertDataToDatabase(ArrayList<Asset> listFromRetrofit) {
+    private void insertDataToDatabase(List<Asset> listFromRetrofit) {
         ArrayList<ContentProviderOperation> batch = new ArrayList<>();
         for (int i = 0; i < listFromRetrofit.size(); i++) {
             Asset asset = listFromRetrofit.get(i);
             ContentValues values = new ContentValues();
             values.put(NftContract.NftEntry.COLUMN_NFT_TOKEN_ID, asset.token_id());
-            values.put(NftContract.NftEntry.COLUMN_NFT_PERMALINK,asset.permalink());
-            values.put(NftContract.NftEntry.COLUMN_NFT_NAME,asset.name());
-            values.put(NftContract.NftEntry.COLUMN_NFT_IMG_URL,asset.image_url());
+            values.put(NftContract.NftEntry.COLUMN_NFT_PERMALINK, asset.permalink());
+            values.put(NftContract.NftEntry.COLUMN_NFT_NAME, asset.name());
+            values.put(NftContract.NftEntry.COLUMN_NFT_IMG_URL, asset.image_url());
             batch.add(ContentProviderOperation
                     .newInsert(NftContract.NftEntry.CONTENT_URI)
                     .withValues(values)
@@ -64,25 +64,37 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         }
     }
 
-    public static ArrayList<Asset> getDataFromRetrofit(String format) {
-        ArrayList<Asset> assetsList_from_retrofit = new ArrayList<>();
+    public void bindData(String uuid) {
         NftRepository
                 .fetchClient()
                 .create(NftService.class)
-                .dtoRepos(format)
+                .dtoRepos(uuid)
                 .enqueue(new Callback<Dto>() {
-            @Override
-            public void onResponse(@NonNull Call<Dto> call, @NonNull Response<Dto> response) {
-                assert response.body() != null;
-                assetsList_from_retrofit.addAll(response.body().assets());
+                    @Override
+                    public void onResponse(Call<Dto> call, Response<Dto> response) {
+                        if(nftAdapter.getItemCount() == 0) {
+                            insertDataToDatabase(removeNull(response.body().assets()));
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<Dto> call, @NonNull Throwable t) {
+                        Log.d("TAG", "Failed!" + "Response = " + t);
+                    }
+                });
+    }
+
+    public List<Asset> removeNull(List<Asset> assets) {
+        //remove null from list
+        for (int i = 0; i < assets.size(); i++) {
+            if (assets.get(i).token_id() == null) {
+                (assets.get(i).token_id()).equals("Unknown");
             }
-            @Override
-            public void onFailure(@NonNull Call<Dto> call, @NonNull Throwable t) {
-                Log.d("TAG", "Failed!" + "Response = " + t);
+            if (assets.get(i).permalink() == null) {
+                (assets.get(i).permalink()).equals("Unknown");
             }
-        });
-        System.out.println("List: " + assetsList_from_retrofit);
-        return assetsList_from_retrofit;
+        }
+        return assets;
     }
 
     @Override

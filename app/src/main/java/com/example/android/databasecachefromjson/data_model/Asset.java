@@ -1,5 +1,8 @@
 package com.example.android.databasecachefromjson.data_model;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.google.auto.value.AutoValue;
 import com.google.gson.annotations.SerializedName;
 import com.ryanharter.auto.value.gson.GenerateTypeAdapter;
@@ -13,9 +16,11 @@ public abstract class Asset {
     @SerializedName("permalink")
     public abstract String permalink();
 
+    @Nullable
     @SerializedName("name")
     public abstract String name();
 
+    @Nullable
     @SerializedName("image_url")
     public abstract String image_url();
 }

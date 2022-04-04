@@ -70,10 +70,10 @@ public class NftProvider extends ContentProvider {
         if (token_id == null) {
             throw new IllegalArgumentException("TOKEN_ID is null");
         }
-        String name = contentValues.getAsString(NftContract.NftEntry.COLUMN_NFT_NAME);
+/*        String name = contentValues.getAsString(NftContract.NftEntry.COLUMN_NFT_NAME);
         if (name == null) {
             throw new IllegalArgumentException("name is null");
-        }
+        }*/
         SQLiteDatabase database = nftDbHelper.getWritableDatabase();
 
         long id = database.insert(NftContract.NftEntry.TABLE_NAME, null, contentValues);
