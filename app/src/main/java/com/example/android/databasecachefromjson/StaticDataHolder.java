@@ -8,6 +8,7 @@ import android.os.RemoteException;
 
 import com.example.android.databasecachefromjson.data.NftContract;
 import com.example.android.databasecachefromjson.data_model.Asset;
+import com.example.android.databasecachefromjson.data_model.AssetEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,22 +23,29 @@ public class StaticDataHolder {
             NftContract.NftEntry.COLUMN_NFT_IMG_URL
     };
 
-    public static List<Asset> removeNull(List<Asset> input) {
-        List<Asset> newFilteredList = new ArrayList<>();
+    public static List<AssetEntity> removeNull(List<Asset> input) {
+        List<AssetEntity> newFilteredList = new ArrayList<>();
         //remove null from list
         for (int i = 0; i < input.size(); i++) {
             Asset current = input.get(i);
-            if (current.token_id() != null && current.permalink() != null) {
-                newFilteredList.add(current);
+            String tokenId = current.token_id();
+            String permalink = current.permalink();
+            if (tokenId != null && permalink != null) {
+                newFilteredList.add(AssetEntity.builder()
+                        .image_url(current.image_url())
+                        .name(current.name())
+                        .permalink(permalink)
+                        .token_id(tokenId)
+                        .build());
             }
         }
         return newFilteredList;
     }
 
-    static void insertDataToDatabase(List<Asset> listFromRetrofit, ContentResolver contentResolver) {
+    static void insertDataToDatabase(List<AssetEntity> list, ContentResolver contentResolver) {
         ArrayList<ContentProviderOperation> batch = new ArrayList<>();
-        for (int i = 0; i < listFromRetrofit.size(); i++) {
-            Asset asset = listFromRetrofit.get(i);
+        for (int i = 0; i < list.size(); i++) {
+            AssetEntity asset = list.get(i);
             ContentValues values = new ContentValues();
             values.put(NftContract.NftEntry.COLUMN_NFT_TOKEN_ID, asset.token_id());
             values.put(NftContract.NftEntry.COLUMN_NFT_PERMALINK, asset.permalink());
