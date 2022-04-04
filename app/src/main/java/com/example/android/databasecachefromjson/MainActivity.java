@@ -84,17 +84,19 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 });
     }
 
-    public List<Asset> removeNull(List<Asset> assets) {
+    public List<Asset> removeNull(List<Asset> input) {
+        List<Asset> newFilteredList = new ArrayList<>();
         //remove null from list
-        for (int i = 0; i < assets.size(); i++) {
-            if (assets.get(i).token_id() == null) {
-                (assets.get(i).token_id()).equals("Unknown");
+        for (int i = 0; i < input.size(); i++) {
+            if (input.get(i).token_id() == null) {
+                continue;
+             }
+            if (input.get(i).permalink() == null) {
+                continue;
             }
-            if (assets.get(i).permalink() == null) {
-                (assets.get(i).permalink()).equals("Unknown");
-            }
+            newFilteredList.add(input.get(i));
         }
-        return assets;
+        return newFilteredList;
     }
 
     @Override
