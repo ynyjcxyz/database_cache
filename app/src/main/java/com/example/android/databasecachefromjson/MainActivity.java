@@ -1,14 +1,10 @@
 package com.example.android.databasecachefromjson;
 
 import android.app.LoaderManager;
-import android.content.ContentProviderOperation;
-import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.Loader;
-import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -17,11 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.android.databasecachefromjson.data.NftContract;
-import com.example.android.databasecachefromjson.data_model.Asset;
 import com.example.android.databasecachefromjson.data_model.Dto;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -47,27 +39,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         nftRecyclerView.setAdapter(nftAdapter);
     }
 
-    private void insertDataToDatabase(List<Asset> listFromRetrofit) {
-        ArrayList<ContentProviderOperation> batch = new ArrayList<>();
-        for (int i = 0; i < listFromRetrofit.size(); i++) {
-            Asset asset = listFromRetrofit.get(i);
-            ContentValues values = new ContentValues();
-            values.put(NftContract.NftEntry.COLUMN_NFT_TOKEN_ID, asset.token_id());
-            values.put(NftContract.NftEntry.COLUMN_NFT_PERMALINK, asset.permalink());
-            values.put(NftContract.NftEntry.COLUMN_NFT_NAME, asset.name());
-            values.put(NftContract.NftEntry.COLUMN_NFT_IMG_URL, asset.image_url());
-            batch.add(ContentProviderOperation
-                    .newInsert(NftContract.NftEntry.CONTENT_URI)
-                    .withValues(values)
-                    .build());
-        }
-        try {
-            getContentResolver().applyBatch(NftContract.CONTENT_AUTHORITY, batch);
-        } catch (OperationApplicationException | RemoteException e) {
-            e.printStackTrace();
-        }
-    }
-
     public void bindData(String uuid) {
         NftRepository
                 .fetchClient()
@@ -77,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                     @Override
                     public void onResponse(Call<Dto> call, Response<Dto> response) {
                         if (nftAdapter.getItemCount() == 0) {
-                            insertDataToDatabase(removeNull(response.body().assets()));
+                            StaticDataHolder.insertDataToDatabase(StaticDataHolder.removeNull(response.body().assets()), MainActivity.this.getContentResolver());
                         }
                     }
 
@@ -88,31 +59,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 });
     }
 
-    public List<Asset> removeNull(List<Asset> input) {
-        List<Asset> newFilteredList = new ArrayList<>();
-        //remove null from list
-        for (int i = 0; i < input.size(); i++) {
-            Asset current = input.get(i);
-            if (current.token_id() != null && current.permalink() != null) {
-                newFilteredList.add(current);
-            }
-        }
-        return newFilteredList;
-    }
-
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        String[] projection = {
-                NftContract.NftEntry._ID,
-                NftContract.NftEntry.COLUMN_NFT_TOKEN_ID,
-                NftContract.NftEntry.COLUMN_NFT_PERMALINK,
-                NftContract.NftEntry.COLUMN_NFT_NAME,
-                NftContract.NftEntry.COLUMN_NFT_IMG_URL
-        };
 
         return new CursorLoader(this,
                 NftContract.NftEntry.CONTENT_URI,
-                projection,
+                StaticDataHolder.PROJECTION,
                 null,
                 null,
                 null);
