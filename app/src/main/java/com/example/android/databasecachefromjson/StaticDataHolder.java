@@ -5,10 +5,8 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.OperationApplicationException;
 import android.os.RemoteException;
-
 import com.example.android.databasecachefromjson.data.NftContract;
 import com.example.android.databasecachefromjson.data_model.Asset;
-
 import java.util.ArrayList;
 import java.util.List;
 
