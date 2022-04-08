@@ -1,7 +1,5 @@
 package com.example.android.databasecachefromjson;
 
-import android.content.Context;
-import android.database.Cursor;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -9,10 +7,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
-import com.example.android.databasecachefromjson.data.NftContract;
+import com.example.android.databasecachefromjson.data_model.NftModel;
 
 public class NftViewHolder extends RecyclerView.ViewHolder {
-
     LinearLayout parent_layout;
     ImageView imageView;
     TextView name, token_id, permalink;
@@ -26,14 +23,10 @@ public class NftViewHolder extends RecyclerView.ViewHolder {
         permalink = itemView.findViewById(R.id.permalink);
     }
 
-    public static void bind(NftViewHolder holder, Cursor cursor, Context context) {
-        int token_id = cursor.getColumnIndex(NftContract.NftEntry.COLUMN_NFT_TOKEN_ID);
-        int permalink = cursor.getColumnIndex(NftContract.NftEntry.COLUMN_NFT_PERMALINK);
-        int name = cursor.getColumnIndex(NftContract.NftEntry.COLUMN_NFT_NAME);
-        int img_url = cursor.getColumnIndex(NftContract.NftEntry.COLUMN_NFT_IMG_URL);
-        holder.token_id.setText(cursor.getString(token_id));
-        holder.permalink.setText(cursor.getString(permalink));
-        holder.name.setText(cursor.getString(name));
-        Glide.with(context).load(cursor.getString(img_url)).into(holder.imageView);
+    public void bindData(NftModel currentNft) {
+        token_id.setText(currentNft.getToken_id());
+        name.setText(currentNft.getName());
+        permalink.setText(currentNft.getPermalink());
+        Glide.with(itemView.getContext()).load(currentNft.getImage_url()).into(imageView);
     }
 }

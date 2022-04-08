@@ -11,14 +11,6 @@ import java.util.List;
 @GenerateTypeAdapter
 @AutoValue
 public abstract class Dto {
-    @Nullable
-    @SerializedName("next")
-    public abstract String next();
-
-    @Nullable
-    @SerializedName("previous")
-    public abstract String previous();
-
     @SerializedName("assets")
-    public abstract List<Asset> assets();
+    public abstract List<NftModel> nfts();
 }

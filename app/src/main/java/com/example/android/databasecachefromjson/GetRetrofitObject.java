@@ -6,15 +6,16 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class NftRepository {
-    public static Retrofit fetchClient() {
+public class GetRetrofitObject {
+    public static NftService retrofitService() {
         return new Retrofit
                 .Builder()
                 .baseUrl("https://run.mocky.io/")
                 .addConverterFactory(GsonConverterFactory.create(createGson()))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .client(buildOkHttpClient())
-                .build();
+                .build()
+                .create(NftService.class);
     }
 }
 //                .create(NftService.class)

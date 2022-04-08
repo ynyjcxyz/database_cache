@@ -1,27 +1,27 @@
 package com.example.android.databasecachefromjson;
 
-import static com.example.android.databasecachefromjson.StaticDataHolder.insertDataToDatabase;
-import static com.example.android.databasecachefromjson.StaticDataHolder.projection;
-import static com.example.android.databasecachefromjson.StaticDataHolder.removeNull;
-
-import androidx.annotation.NonNull;
+import static com.example.android.databasecachefromjson.GetObservableDto.getDto;
+import static com.example.android.databasecachefromjson.data_model.NftDatabase.DATABASE_NAME;
+import static com.uber.autodispose.AutoDispose.autoDisposable;
+import static com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider.from;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.app.LoaderManager;
-import android.content.CursorLoader;
-import android.content.Loader;
-import android.database.Cursor;
+import androidx.room.Room;
 import android.os.Bundle;
-import android.util.Log;
-import com.example.android.databasecachefromjson.data.NftContract;
 import com.example.android.databasecachefromjson.data_model.Dto;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import com.example.android.databasecachefromjson.data_model.NftDao;
+import com.example.android.databasecachefromjson.data_model.NftDatabase;
+import com.example.android.databasecachefromjson.data_model.NftModel;
+import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
-    private static final int NFT_LOADER_ID = 0;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+
+public class MainActivity extends AppCompatActivity {
+    private List<NftModel> nftList;
+    private NftDao nftDao;
+    private NftDatabase nftDatabase;
     private RecyclerView nftRecyclerView;
     private NftListAdapter nftAdapter;
     static final String UUID = "d3267819-ea0b-4209-b521-b7b2d887c6c1";
@@ -30,52 +30,37 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        bindData(UUID);
 
-        getLoaderManager().initLoader(NFT_LOADER_ID, null, this);
+        nftDatabase = Room
+                .databaseBuilder(this, NftDatabase.class, DATABASE_NAME)
+                .fallbackToDestructiveMigration()
+                .build();
+        nftDao = nftDatabase.nftDao();
+
+        bindData(UUID);
 
         nftRecyclerView = findViewById(R.id.nft_recycler);
         nftRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        nftAdapter = new NftListAdapter(this);
+        nftAdapter = new NftListAdapter(nftList);
         nftRecyclerView.setAdapter(nftAdapter);
     }
 
     public void bindData(String uuid) {
-        NftRepository
-                .fetchClient()
-                .create(NftService.class)
-                .dtoRepos(uuid)
-                .enqueue(new Callback<Dto>() {
-                    @Override
-                    public void onResponse(Call<Dto> call, Response<Dto> response) {
-                        if(nftAdapter.getItemCount() == 0) {
-                            insertDataToDatabase(removeNull(response.body().assets()), getContentResolver());
-                        }
-                    }
-                    @Override
-                    public void onFailure(@NonNull Call<Dto> call, @NonNull Throwable t) {
-                        Log.d("TAG", "Failed!" + "Response = " + t);
-                    }
-                });
+        getDto(uuid).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(autoDisposable(from(this)))
+                .subscribe(this::onSuccess,this::onError);
     }
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(this,
-                NftContract.NftEntry.CONTENT_URI,
-                projection,
-                null,
-                null,
-                null);
+    private void onError(Throwable throwable) {
+        System.out.println(throwable);
+        throwable.printStackTrace();
+        throw new RuntimeException(throwable);
     }
 
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        nftAdapter.setData(cursor);
-    }
+    private void onSuccess(Dto dto) {
+        nftDao.insert(dto.nfts());
 
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        nftAdapter.setData(null);
+        nftAdapter.setData(nftDao.getAll());
     }
 }
