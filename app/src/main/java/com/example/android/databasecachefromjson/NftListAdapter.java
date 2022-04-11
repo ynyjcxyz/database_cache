@@ -5,18 +5,18 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import com.example.android.databasecachefromjson.data_model.NftModel;
+import com.example.android.databasecachefromjson.data_model.Assets;
 import java.util.List;
 
 public class NftListAdapter extends RecyclerView.Adapter<NftViewHolder> {
-    private List<NftModel> nftList;
+    private List<Assets> nftList;
 
-    public NftListAdapter(List<NftModel> nftList) {
+    public NftListAdapter(List<Assets> nftList) {
         this.nftList = nftList;
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    public void setData(List<NftModel> dataList) {
+    public void setData(List<Assets> dataList) {
         nftList.addAll(dataList);
         notifyDataSetChanged();
     }

@@ -1,6 +1,5 @@
 package com.example.android.databasecachefromjson.data_model;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
@@ -11,6 +10,14 @@ import java.util.List;
 @GenerateTypeAdapter
 @AutoValue
 public abstract class Dto {
+/*    @Nullable
+    @SerializedName("next")
+    public abstract String next();
+
+    @Nullable
+    @SerializedName("previous")
+    public abstract String previous();*/
+
     @SerializedName("assets")
-    public abstract List<NftModel> nfts();
+    public abstract List<AssetsBean> assets();
 }

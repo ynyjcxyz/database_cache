@@ -1,25 +1,25 @@
 package com.example.android.databasecachefromjson;
 
 import static com.example.android.databasecachefromjson.GetObservableDto.getDto;
-import static com.example.android.databasecachefromjson.data_model.NftDatabase.DATABASE_NAME;
 import static com.uber.autodispose.AutoDispose.autoDisposable;
 import static com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider.from;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.Room;
 import android.os.Bundle;
+import com.example.android.databasecachefromjson.data_model.Assets;
+import com.example.android.databasecachefromjson.data_model.AssetsBean;
 import com.example.android.databasecachefromjson.data_model.Dto;
 import com.example.android.databasecachefromjson.data_model.NftDao;
 import com.example.android.databasecachefromjson.data_model.NftDatabase;
-import com.example.android.databasecachefromjson.data_model.NftModel;
 import java.util.List;
-
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
-    private List<NftModel> nftList;
+    public final String TAG = MainActivity.class.getName();
+    private List<Assets> nftList;
+    private List<AssetsBean> rawDataList;
     private NftDao nftDao;
     private NftDatabase nftDatabase;
     private RecyclerView nftRecyclerView;
@@ -31,11 +31,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        nftDatabase = Room
-                .databaseBuilder(this, NftDatabase.class, DATABASE_NAME)
-                .fallbackToDestructiveMigration()
-                .build();
-        nftDao = nftDatabase.nftDao();
+        nftDao = NftDatabase.getInstance(this).nftDao();
 
         bindData(UUID);
 
@@ -46,7 +42,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void bindData(String uuid) {
-        getDto(uuid).subscribeOn(Schedulers.io())
+        getDto(uuid)
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .as(autoDisposable(from(this)))
                 .subscribe(this::onSuccess,this::onError);
@@ -59,8 +56,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void onSuccess(Dto dto) {
-        nftDao.insert(dto.nfts());
+        rawDataList = dto.assets();
 
+        nftDao.insert();
         nftAdapter.setData(nftDao.getAll());
     }
 }

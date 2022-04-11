@@ -7,7 +7,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
-import com.example.android.databasecachefromjson.data_model.NftModel;
+import com.example.android.databasecachefromjson.data_model.Assets;
 
 public class NftViewHolder extends RecyclerView.ViewHolder {
     LinearLayout parent_layout;
@@ -23,7 +23,7 @@ public class NftViewHolder extends RecyclerView.ViewHolder {
         permalink = itemView.findViewById(R.id.permalink);
     }
 
-    public void bindData(NftModel currentNft) {
+    public void bindData(Assets currentNft) {
         token_id.setText(currentNft.getToken_id());
         name.setText(currentNft.getName());
         permalink.setText(currentNft.getPermalink());
