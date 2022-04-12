@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ListConvertor {
-    List<Assets> convertor(List<AssetsBean> rawDataList){
+    public static List<Assets> convertor(List<AssetsBean> rawDataList){
         return rawDataList
                 .stream()
                 .map(assetsBean ->

@@ -17,7 +17,7 @@ public class NftListAdapter extends RecyclerView.Adapter<NftViewHolder> {
 
     @SuppressLint("NotifyDataSetChanged")
     public void setData(List<Assets> dataList) {
-        nftList.addAll(dataList);
+        nftList = dataList;
         notifyDataSetChanged();
     }
 

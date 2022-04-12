@@ -7,12 +7,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.os.Bundle;
+import android.util.Log;
 import com.example.android.databasecachefromjson.data_model.Assets;
 import com.example.android.databasecachefromjson.data_model.AssetsBean;
 import com.example.android.databasecachefromjson.data_model.Dto;
 import com.example.android.databasecachefromjson.data_model.NftDao;
 import com.example.android.databasecachefromjson.data_model.NftDatabase;
 import java.util.List;
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
@@ -21,7 +23,6 @@ public class MainActivity extends AppCompatActivity {
     private List<Assets> nftList;
     private List<AssetsBean> rawDataList;
     private NftDao nftDao;
-    private NftDatabase nftDatabase;
     private RecyclerView nftRecyclerView;
     private NftListAdapter nftAdapter;
     static final String UUID = "d3267819-ea0b-4209-b521-b7b2d887c6c1";
@@ -50,15 +51,40 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void onError(Throwable throwable) {
-        System.out.println(throwable);
+        System.out.println("throwable1234 : " + throwable);
         throwable.printStackTrace();
         throw new RuntimeException(throwable);
     }
 
     private void onSuccess(Dto dto) {
         rawDataList = dto.assets();
+        nftList = ListConvertor.convertor(rawDataList);
+        clearAllAndInsert(nftList);
+        subscribeData(nftDao.getAllAssets());
+    }
 
-        nftDao.insert();
-        nftAdapter.setData(nftDao.getAll());
+    private void clearAllAndInsert(List<Assets> nftList) {
+        Log.d(TAG, "clearAllAndInsert: "+ nftList.toString());
+        NftDatabase.databaseWriteExecutor.execute(() -> {
+            nftDao.deleteAll();
+            nftDao.insert(nftList);  // insert new data
+        } );
+    }
+
+    private void subscribeData(Observable<List<Assets>> allAssets) {
+        allAssets
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(autoDisposable(from(this)))
+                .subscribe(this::onSubscribeSuccess,this::onSubscribeError);
+    }
+
+    private void onSubscribeError(Throwable throwable) {
+        throwable.printStackTrace();
+        throw new RuntimeException(throwable);
+    }
+
+    private void onSubscribeSuccess(List<Assets> assets) {
+        nftAdapter.setData(assets);
     }
 }
