@@ -24,11 +24,11 @@
             </intent-filter>
         </activity>
 
-        <provider
+<!--        <provider
             android:name=".data.NftProvider"
             android:authorities="com.example.android.databasecachefromjson"
             android:value=".MainActivity"
-            android:exported="false" />
+            android:exported="false" />-->
 
     </application>
 

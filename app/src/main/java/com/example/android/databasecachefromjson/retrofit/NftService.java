@@ -1,4 +1,4 @@
-package com.example.android.databasecachefromjson;
+package com.example.android.databasecachefromjson.retrofit;
 
 import com.example.android.databasecachefromjson.data_model.Dto;
 

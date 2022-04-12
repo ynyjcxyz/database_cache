@@ -1,4 +1,4 @@
-package com.example.android.databasecachefromjson.data_model;
+package com.example.android.databasecachefromjson.data;
 
 import android.content.Context;
 
@@ -6,10 +6,12 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
+import com.example.android.databasecachefromjson.data_model.Assets;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {Assets.class}, version = 2, exportSchema = false)
+@Database(entities = {Assets.class}, version = 1, exportSchema = false)
 public abstract class NftDatabase extends RoomDatabase {
 
     public static final String DATABASE_NAME = "NFT_db";

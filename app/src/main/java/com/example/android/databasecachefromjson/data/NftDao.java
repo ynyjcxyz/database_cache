@@ -1,9 +1,12 @@
-package com.example.android.databasecachefromjson.data_model;
+package com.example.android.databasecachefromjson.data;
 
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+
+import com.example.android.databasecachefromjson.data_model.Assets;
+
 import java.util.List;
 
 import io.reactivex.Observable;

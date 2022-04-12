@@ -1,6 +1,6 @@
-package com.example.android.databasecachefromjson;
+package com.example.android.databasecachefromjson.retrofit;
 
-import static com.example.android.databasecachefromjson.GetRetrofitObject.retrofitService;
+import static com.example.android.databasecachefromjson.retrofit.GetRetrofitObject.retrofitService;
 
 import com.example.android.databasecachefromjson.data_model.Dto;
 import io.reactivex.Observable;
